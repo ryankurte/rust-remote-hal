@@ -49,6 +49,8 @@ fn main() {
     let device = opts.device;
 
     info!("connecting to remote-hal server: {:?}", &addr);
+    debug!("device: {:?}", device);
+    debug!("command: {:?}", command);
 
     let mut rt = Runtime::new().unwrap();
 

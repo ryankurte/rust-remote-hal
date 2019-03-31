@@ -24,6 +24,7 @@ crate = "0.0.2"
 log = "0.4.6"
 simplelog = "0.5.3"
 hex = "0.3.2"
+try_from = "0.3.2"
 
 [features]
 default = ["daemon", "cli"]

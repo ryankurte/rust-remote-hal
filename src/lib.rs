@@ -11,6 +11,8 @@ extern crate futures_timer;
 extern crate embedded_hal;
 #[macro_use]
 extern crate log;
+extern crate hex;
+extern crate try_from;
 
 extern crate daemon_engine;
 extern crate rr_mux;

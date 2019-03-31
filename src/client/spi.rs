@@ -23,7 +23,7 @@ impl spi::Transfer<u8> for Spi {
 
     fn transfer<'w>(&mut self, data: &'w mut [u8]) -> Result<&'w [u8], Error> {
         debug!("spi transfer request {}", self.device);
-        let resp = self.mux.do_request(&self.device, RequestKind::SpiTransfer(Data{data: data.to_vec()})).wait()?;
+        let resp = self.mux.do_request(&self.device, RequestKind::SpiTransfer{write_data: Data{data: data.to_vec()}}).wait()?;
         debug!("spi transfer response");
         match resp {
             ResponseKind::SpiTransfer(d) => {
@@ -39,7 +39,7 @@ impl spi::Write<u8> for Spi {
     type Error = Error;
 
     fn write(&mut self, data: &[u8]) -> Result<(), Error> {
-        let resp = self.mux.do_request(&self.device, RequestKind::SpiWrite(Data{data: data.to_vec()})).wait()?;
+        let resp = self.mux.do_request(&self.device, RequestKind::SpiWrite{write_data: Data{data: data.to_vec()}}).wait()?;
         match resp {
             ResponseKind::Ok => Ok(()),
             _ => Err(Error::InvalidResponse(resp)),

@@ -85,7 +85,7 @@ impl Server {
                 }
             },
 
-            RequestKind::SpiTransfer(data) => {
+            RequestKind::SpiTransfer{write_data} => {
                 info!("received SpiTransfer");
                 let mut spi_map = self.spi.lock().unwrap();
                 let spi = match spi_map.get_mut(device) {
@@ -93,7 +93,7 @@ impl Server {
                     None => return Ok(ResponseKind::DeviceNotBound),
                 };
 
-                let mut d = data.data.clone();
+                let mut d = write_data.data.clone();
 
                 match SpiTransfer::transfer(spi.deref_mut(), &mut d) {
                     Ok(d) => ResponseKind::SpiTransfer(d.to_vec()),
@@ -101,7 +101,7 @@ impl Server {
                 }
             },
 
-            RequestKind::SpiWrite(data) => {
+            RequestKind::SpiWrite{write_data} => {
                 info!("received SpiWrite");
                 let mut spi_map = self.spi.lock().unwrap();
                 let spi = match spi_map.get_mut(device) {
@@ -109,7 +109,7 @@ impl Server {
                     None => return Ok(ResponseKind::DeviceNotBound),
                 };
 
-                let mut d = data.data.clone();
+                let mut d = write_data.data.clone();
 
                 match SpiWrite::write(spi.deref_mut(), &mut d) {
                     Ok(_) => ResponseKind::Ok,
