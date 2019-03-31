@@ -1,0 +1,43 @@
+[package]
+name = "remote-hal"
+description = "a JSON RPC based remote embedded-hal implementation including a daemon, cli, and library"
+repository = "https://github.com/ryankurte/rust-remote-hal"
+version = "0.1.0"
+authors = ["Ryan Kurte <ryankurte@gmail.com>"]
+edition = "2018"
+license = "MIT / Apache-2.0"
+
+[dependencies]
+serde = "1.0.89"
+serde_derive = "1.0.89"
+embedded-hal = "0.2.2"
+linux-embedded-hal = "0.2.2"
+structopt = "0.2.15"
+tokio = "0.1.18"
+daemon-engine = "0.5.1"
+futures = "0.1.25"
+rr-mux = "0.7.0"
+rand = "0.6.5"
+futures-timer = "0.1.1"
+serde_json = "1.0.39"
+crate = "0.0.2"
+log = "0.4.6"
+simplelog = "0.5.3"
+hex = "0.3.2"
+
+[features]
+default = ["daemon", "cli"]
+daemon = []
+cli = []
+
+[[bin]]
+name = "rhd"
+path = "src/bin/daemon.rs"
+required-features = ["daemon"]
+
+[[bin]]
+name = "rhc"
+path = "src/bin/cli.rs"
+required-features = ["cli"]
+
+
