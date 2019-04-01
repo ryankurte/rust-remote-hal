@@ -61,7 +61,7 @@ impl Server {
                 info!("Response: {:?}", resp);
 
                 r.send(Response{id: req.id, kind: resp}).map(|_v| trace!("server send complete") ).map_err(|e| error!("server error: {:?}", e))
-            }).map(|v| () ).map_err(|_e| ());
+            }).map(|_v| () ).map_err(|_e| ());
 
         tokio::spawn(server_handle);
 
@@ -82,6 +82,16 @@ impl Server {
                         v.insert(Spi::new(device, c.baud, c.mode)?);
                         ResponseKind::Ok
                     },
+                }
+            },
+
+
+            RequestKind::SpiDisconnect => {
+                info!("received SpiDisconnect (device: {})", device);
+                let mut spi = self.spi.lock().unwrap();
+                match spi.remove(device) {
+                    Some(_d) => ResponseKind::Ok,
+                    None => ResponseKind::DeviceNotBound,
                 }
             },
 
@@ -127,6 +137,15 @@ impl Server {
                         v.insert(I2c::new(device)?);
                         ResponseKind::Ok
                     },
+                }
+            },
+
+            RequestKind::I2cDisconnect => {
+                info!("received I2cDisconnect (device: {})", device);
+                let mut i2c = self.i2c.lock().unwrap();
+                match i2c.remove(device) {
+                    Some(_d) => ResponseKind::Ok,
+                    None => ResponseKind::DeviceNotBound,
                 }
             },
 
@@ -183,9 +202,23 @@ impl Server {
                 match pin.entry(device.to_owned()) {
                     Entry::Occupied(_e) => ResponseKind::DeviceAlreadyBound,
                     Entry::Vacant(v) => {
-                        v.insert(Pin::new(device)?);
+                        let p = Pin::new(device)?;
+                        p.export()?;
+                        v.insert(p);
                         ResponseKind::Ok
                     },
+                }
+            },
+
+            RequestKind::PinDisconnect => {
+                info!("received PinDisconnect (device: {})", device);
+                let mut pins = self.pin.lock().unwrap();
+                match pins.remove(device) {
+                    Some(p) => {
+                        p.unexport()?;
+                        ResponseKind::Ok
+                    },
+                    None => ResponseKind::DeviceNotBound
                 }
             },
 
@@ -223,8 +256,6 @@ impl Server {
                     Err(e) => ResponseKind::Error(format!("{:?}", e)),
                 }
             },
-
-            _ => ResponseKind::Unhandled
         };
 
         Ok(resp)

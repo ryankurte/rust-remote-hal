@@ -5,6 +5,7 @@ use crate::common::ResponseKind;
 use daemon_engine::DaemonError;
 use serde_json::{Error as JsonError};
 use tokio::timer::timeout::Error as TimeoutError;
+use linux_embedded_hal::sysfs_gpio::Error as GpioError;
 
 #[derive(Debug)]
 pub enum Error {
@@ -14,6 +15,7 @@ pub enum Error {
     Remote(String),
     Daemon(DaemonError),
     InvalidResponse(ResponseKind),
+    Gpio(GpioError),
     None(()),
 }
 
@@ -38,6 +40,12 @@ impl From<DaemonError> for Error {
 impl From<()> for Error {
     fn from(e: ()) -> Self {
         Error::None(e)
+    }
+}
+
+impl From<GpioError> for Error {
+    fn from(e: GpioError) -> Self {
+        Error::Gpio(e)
     }
 }
 
