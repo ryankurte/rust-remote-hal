@@ -113,9 +113,9 @@ impl Client {
     }
 
     /// Connect to a new Pin instance
-    pub fn pin(&mut self, path: &str) -> Result<Pin, Error> {
+    pub fn pin(&mut self, path: &str, mode: PinMode) -> Result<Pin, Error> {
         debug!("attempting connection to Pin: {}", path);
-        let resp = self.mux.do_request(path, RequestKind::PinConnect).wait()?;
+        let resp = self.mux.do_request(path, RequestKind::PinConnect(mode)).wait()?;
         match resp {
             ResponseKind::Ok => Ok(Pin::new(path.to_owned(), self.mux.clone())),
              _ => Err(Error::InvalidResponse(resp)),

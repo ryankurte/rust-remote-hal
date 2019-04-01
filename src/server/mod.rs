@@ -195,15 +195,14 @@ impl Server {
                 }
             },
 
-            RequestKind::PinConnect => {
+            RequestKind::PinConnect(mode) => {
                 info!("received PinConnect (device: {})", device);
                 let mut pin = self.pin.lock().unwrap();
 
                 match pin.entry(device.to_owned()) {
                     Entry::Occupied(_e) => ResponseKind::DeviceAlreadyBound,
                     Entry::Vacant(v) => {
-                        let p = Pin::new(device)?;
-                        p.export()?;
+                        let p = Pin::new(device, mode)?;
                         v.insert(p);
                         ResponseKind::Ok
                     },

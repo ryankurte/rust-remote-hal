@@ -45,7 +45,8 @@ pub enum RequestKind {
 
     #[structopt(name = "pin-connect")]
     /// Connect to the specified pin
-    PinConnect,
+    PinConnect(PinMode),
+
     #[structopt(name = "pin-set")]
     /// Set the value of the specified pin
     PinSet(Value),
@@ -73,6 +74,15 @@ pub enum RequestKind {
     I2cDisconnect,
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize, StructOpt)]
+pub enum PinMode {
+    #[structopt(name = "output")]
+    /// Configure pin in output mode
+    Output,
+    #[structopt(name = "input")]
+    /// Configure pin in input mode
+    Input,
+}
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Response {
