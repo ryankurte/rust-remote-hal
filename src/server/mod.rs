@@ -15,13 +15,13 @@ use embedded_hal::digital::{InputPin, OutputPin};
 use crate::common::*;
 use crate::error::Error;
 
-pub mod spi;
-use spi::Spi;
-pub mod i2c;
-use i2c::I2c;
-pub mod pin;
-use pin::Pin;
+use crate::local::spi::Spi;
+use crate::local::i2c::I2c;
+use crate::local::pin::Pin;
 
+/// remote-hal server, this exposes embedded-hal devices over TCP RPC interface
+/// 
+/// THIS MUST BE RUN IN A TOKIO CONTEXT
 #[derive(Clone)]
 pub struct Server {
     _server: TcpServer<JsonCodec<Response, Request>>,

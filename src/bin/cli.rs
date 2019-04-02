@@ -12,7 +12,7 @@ extern crate simplelog;
 use simplelog::{TermLogger, LevelFilter};
 
 extern crate remote_hal;
-use remote_hal::client::Client;
+use remote_hal::remote::Client;
 use remote_hal::common::RequestKind;
 
 

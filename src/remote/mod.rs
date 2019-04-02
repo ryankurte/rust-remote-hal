@@ -25,7 +25,7 @@ type Mux = BaseMux<u64, (), Request, Response, Error, ()>;
 
 pub const TIMEOUT: Duration = Duration::from_secs(3);
 
-///
+/// Remote client for connecting to remote-hal server peripherals
 /// 
 /// THIS MUST BE RUN IN A MULTI-THREADED TOKIO CONTEXT
 pub struct Client {
