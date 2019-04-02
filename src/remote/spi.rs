@@ -7,14 +7,22 @@ use crate::common::*;
 use crate::error::Error;
 use super::{Mux, Requester};
 
+#[derive(Clone)]
 pub struct Spi {
     device: String,
     mux: Mux,
 }
 
+
 impl Spi {
     pub (crate) fn new(device: String, mux: Mux) -> Self {
         Spi{device, mux}
+    }
+}
+
+impl Drop for Spi {
+    fn drop(&mut self) {
+        self.mux.do_request(&self.device, RequestKind::SpiDisconnect).wait().unwrap();
     }
 }
 

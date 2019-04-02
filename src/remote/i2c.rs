@@ -7,6 +7,7 @@ use crate::common::*;
 use crate::error::Error;
 use super::{Mux, Requester};
 
+#[derive(Clone)]
 pub struct I2c {
     device: String,
     mux: Mux,
@@ -15,6 +16,12 @@ pub struct I2c {
 impl I2c {
     pub (crate) fn new(device: String, mux: Mux) -> Self {
         I2c{device, mux}
+    }
+}
+
+impl Drop for I2c {
+    fn drop(&mut self) {
+        self.mux.do_request(&self.device, RequestKind::I2cDisconnect).wait().unwrap();
     }
 }
 

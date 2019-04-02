@@ -7,6 +7,7 @@ use crate::common::*;
 use crate::error::Error;
 use super::{Mux, Requester};
 
+#[derive(Clone)]
 pub struct Pin {
     device: String,
     mux: Mux,
@@ -32,6 +33,12 @@ impl Pin {
             ResponseKind::PinGet(v) => Ok(v),
              _ => Err(Error::InvalidResponse(resp)),
         }
+    }
+}
+
+impl Drop for Pin {
+    fn drop(&mut self) {
+        self.mux.do_request(&self.device, RequestKind::PinDisconnect).wait().unwrap();
     }
 }
 

@@ -32,7 +32,7 @@ impl Manager for Client {
     type I2c = I2c;
 
     /// Connect to a new Spi instance
-    fn spi(&mut self, path: &str, baud: u32, mode: SpiMode) -> Box<Future<Item=Spi, Error=Error>> {
+    fn spi(&mut self, path: &str, baud: u32, mode: SpiMode) -> Box<Future<Item=Spi, Error=Error>+ Send> {
         debug!("attempting connection to SPI device: {}", path);
         let d = match Spi::new(path, baud, mode) {
             Ok(d) => ok(d),
@@ -42,7 +42,7 @@ impl Manager for Client {
     }
 
     /// Connect to a new Pin instance
-    fn pin(&mut self, path: &str, mode: PinMode) -> Box<Future<Item=Pin, Error=Error>> {
+    fn pin(&mut self, path: &str, mode: PinMode) -> Box<Future<Item=Pin, Error=Error> + Send> {
         debug!("attempting connection to Pin: {}", path);
         let d = match Pin::new(path, mode) {
             Ok(d) => ok(d),
@@ -52,7 +52,7 @@ impl Manager for Client {
     }
 
     /// Connect to a new I2c instance
-    fn i2c(&mut self, path: &str) -> Box<Future<Item=I2c, Error=Error>> {
+    fn i2c(&mut self, path: &str) -> Box<Future<Item=I2c, Error=Error> + Send> {
         debug!("attempting connection to I2c: {}", path);
         let d = match I2c::new(path) {
             Ok(d) => ok(d),

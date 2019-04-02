@@ -27,13 +27,6 @@ pub mod remote;
 
 
 use std::net::{SocketAddr, ToSocketAddrs};
-use futures::prelude::*;
-use futures::future::{ok, err};
-
-use crate::manager::Manager;
-use crate::error::Error;
-use crate::local::Client as LocalClient;
-use crate::remote::Client as RemoteClient;
 
 /// Remote address helper
 /// Fetches a SocketAddr from the REMOTE_HAL_SERVER environmental variable
