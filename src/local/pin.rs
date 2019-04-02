@@ -1,3 +1,4 @@
+use embedded_hal::digital;
 
 use linux_embedded_hal::{Pin as PinDev};
 use linux_embedded_hal::sysfs_gpio::Direction;
@@ -24,16 +25,34 @@ impl Pin {
     }
 }
 
-impl std::ops::Deref for Pin {
-    type Target = PinDev;
-
-    fn deref(&self) -> &Self::Target {
-        &self.dev
+impl Drop for Pin {
+    fn drop(&mut self) {
+        self.dev.unexport().unwrap();
     }
 }
 
-impl std::ops::DerefMut for Pin {
-    fn deref_mut(&mut self) -> &mut Self::Target {
-        &mut self.dev
+impl digital::InputPin for Pin {
+    //type Error = Error;
+
+    fn is_high(&self) -> bool {
+        self.dev.is_high()
+    }
+
+    fn is_low(&self) -> bool {
+        self.dev.is_low()
     }
 }
+
+impl digital::OutputPin for Pin {
+    //type Error = Error;
+
+    fn set_high(&mut self) {
+        self.dev.set_high();
+    }
+
+    fn set_low(&mut self) {
+        self.dev.set_low();
+    }
+}
+
+

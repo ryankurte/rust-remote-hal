@@ -1,4 +1,6 @@
+use std::io;
 
+use embedded_hal::blocking::spi;
 use linux_embedded_hal::{spidev, Spidev};
 
 use crate::common::*;
@@ -29,16 +31,19 @@ impl Spi {
     }
 }
 
-impl std::ops::Deref for Spi {
-    type Target = Spidev;
+impl spi::Transfer<u8> for Spi {
+    type Error = io::Error;
 
-    fn deref(&self) -> &Self::Target {
-        &self.dev
+    fn transfer<'w>(&mut self, data: &'w mut [u8]) -> Result<&'w [u8], Self::Error> {
+        self.dev.transfer(data)
     }
 }
 
-impl std::ops::DerefMut for Spi {
-    fn deref_mut(&mut self) -> &mut Self::Target {
-        &mut self.dev
+impl spi::Write<u8> for Spi {
+    type Error = io::Error;
+
+    fn write(&mut self, data: &[u8]) -> Result<(), Self::Error> {
+        self.dev.write(data)
     }
 }
+

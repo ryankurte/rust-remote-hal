@@ -2,7 +2,6 @@
 use std::net::{SocketAddr};
 use std::sync::{Arc, Mutex};
 use std::collections::{HashMap, hash_map::Entry};
-use std::ops::DerefMut;
 
 use daemon_engine::{TcpServer, JsonCodec};
 use tokio::prelude::*;
@@ -105,7 +104,7 @@ impl Server {
 
                 let mut d = write_data.data.clone();
 
-                match SpiTransfer::transfer(spi.deref_mut(), &mut d) {
+                match SpiTransfer::transfer(spi, &mut d) {
                     Ok(d) => ResponseKind::SpiTransfer(d.to_vec()),
                     Err(e) => ResponseKind::Error(format!("{:?}", e)),
                 }
@@ -121,7 +120,7 @@ impl Server {
 
                 let mut d = write_data.data.clone();
 
-                match SpiWrite::write(spi.deref_mut(), &mut d) {
+                match SpiWrite::write(spi, &mut d) {
                     Ok(_) => ResponseKind::Ok,
                     Err(e) => ResponseKind::Error(format!("{:?}", e)),
                 }
@@ -157,7 +156,7 @@ impl Server {
                     None => return Ok(ResponseKind::DeviceNotBound),
                 };
 
-                match I2cWrite::write(i2c.deref_mut(), c.addr, &c.write_data.data) {
+                match I2cWrite::write(i2c, c.addr, &c.write_data.data) {
                     Ok(_) => ResponseKind::Ok,
                     Err(e) => ResponseKind::Error(format!("{:?}", e)),
                 }
@@ -173,7 +172,7 @@ impl Server {
 
                 let mut buff = vec![0; c.read_len as usize];
 
-                match I2cRead::read(i2c.deref_mut(), c.addr, &mut buff) {
+                match I2cRead::read(i2c, c.addr, &mut buff) {
                     Ok(_) => ResponseKind::I2cRead(buff),
                     Err(e) => ResponseKind::Error(format!("{:?}", e)),
                 }
@@ -189,7 +188,7 @@ impl Server {
 
                 let mut buff = vec![0; c.read_len as usize];
 
-                match I2cWriteRead::write_read(i2c.deref_mut(), c.addr, &c.write_data.data, &mut buff) {
+                match I2cWriteRead::write_read(i2c, c.addr, &c.write_data.data, &mut buff) {
                     Ok(_) => ResponseKind::I2cRead(buff),
                     Err(e) => ResponseKind::Error(format!("{:?}", e)),
                 }
@@ -213,8 +212,7 @@ impl Server {
                 info!("received PinDisconnect (device: {})", device);
                 let mut pins = self.pin.lock().unwrap();
                 match pins.remove(device) {
-                    Some(p) => {
-                        p.unexport()?;
+                    Some(_p) => {
                         ResponseKind::Ok
                     },
                     None => ResponseKind::DeviceNotBound
@@ -230,8 +228,8 @@ impl Server {
                 };
 
                 let res: Result<_, ()> = Ok(match c.value {
-                    true => OutputPin::set_high(pin.deref_mut()),
-                    false => OutputPin::set_low(pin.deref_mut()),
+                    true => OutputPin::set_high(pin),
+                    false => OutputPin::set_low(pin),
                 });
 
                 match res {
@@ -248,7 +246,7 @@ impl Server {
                     None => return Ok(ResponseKind::DeviceNotBound),
                 };
 
-                let v: Result<_, ()> = Ok(InputPin::is_high(pin.deref_mut()));
+                let v: Result<_, ()> = Ok(InputPin::is_high(pin));
 
                 match v {
                     Ok(v) => ResponseKind::PinGet(v),

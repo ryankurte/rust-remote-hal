@@ -21,8 +21,8 @@ pub struct Client {
 
 impl Client {
     /// Create a new local client instance
-    pub fn new() -> Self {
-        Client{_reserved: ()}
+    pub fn new() -> impl Future<Item=Client, Error=Error> {
+        ok(Client{_reserved: ()})
     }
 }
 
