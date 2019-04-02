@@ -17,6 +17,7 @@ pub enum Error {
     InvalidResponse(ResponseKind),
     Gpio(GpioError),
     InvalidSpiMode,
+    InvalidRemoteAddress,
     None(()),
 }
 

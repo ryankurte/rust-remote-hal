@@ -28,7 +28,8 @@ try_from = "0.3.2"
 simple-error = "0.1.13"
 
 [features]
-default = ["daemon", "cli"]
+default = ["daemon", "cli", "remote"]
+remote = []
 daemon = []
 cli = []
 

@@ -24,3 +24,26 @@ pub mod server;
 pub mod local;
 pub mod remote;
 
+
+
+use std::net::{SocketAddr, ToSocketAddrs};
+use futures::prelude::*;
+use futures::future::{ok, err};
+
+use crate::manager::Manager;
+use crate::error::Error;
+use crate::local::Client as LocalClient;
+use crate::remote::Client as RemoteClient;
+
+/// Remote address helper
+/// Fetches a SocketAddr from the REMOTE_HAL_SERVER environmental variable
+pub fn remote_addr() -> SocketAddr {
+    let a = std::env::var("REMOTE_HAL_SERVER").expect("REMOTE_HAL_SERVER environmental variable undefined (and feature remote enabled)");
+
+    let mut a = a.to_socket_addrs().expect("Error parsing socket address");
+
+    match a.next() {
+        Some(a) => a,
+        None => panic!("No socket addresses found"),
+    }
+}
