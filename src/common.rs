@@ -3,6 +3,8 @@ use rand::random;
 use structopt::StructOpt;
 use hex;
 
+use simple_error::SimpleError;
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Request {
     pub id: u64,
@@ -84,6 +86,48 @@ pub enum PinMode {
     Input,
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize, StructOpt)]
+pub enum SpiMode {
+    #[structopt(name = "mode-0")]
+    /// Configure SPI device in mode 0 (CPOL: 0, CPHA: 0)
+    Mode0,
+    #[structopt(name = "mode-1")]
+    /// Configure SPI device in mode 1 (CPOL: 0, CPHA: 1)
+    Mode1,
+    #[structopt(name = "mode-2")]
+    /// Configure SPI device in mode 2 (CPOL: 1, CPHA: 0)
+    Mode2,
+    #[structopt(name = "mode-3")]
+    /// Configure SPI device in mode 3 (CPOL: 0, CPHA: 0)
+    Mode3,
+}
+
+impl std::str::FromStr for SpiMode {
+    type Err = SimpleError;
+
+    fn from_str(mode: &str) -> Result<Self, Self::Err> {
+        match mode {
+            "0" => Ok(SpiMode::Mode0),
+            "1" => Ok(SpiMode::Mode1),
+            "2" => Ok(SpiMode::Mode2),
+            "3" => Ok(SpiMode::Mode3),
+            _ => Err(SimpleError::new("invalid spi mode")),
+        }
+    }
+}
+
+impl std::string::ToString for SpiMode {
+    fn to_string(&self) -> String {
+        match self {
+            SpiMode::Mode0 => format!("0"),
+            SpiMode::Mode1 => format!("1"),
+            SpiMode::Mode2 => format!("2"),
+            SpiMode::Mode3 => format!("3"),
+        }
+    }
+}
+
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Response {
     pub id: u64,
@@ -137,7 +181,7 @@ pub struct SpiConnect {
     pub baud: u32,
     
     /// SPI mode
-    pub mode: u32,
+    pub mode: SpiMode,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, StructOpt)]

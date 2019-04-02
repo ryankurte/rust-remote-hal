@@ -16,6 +16,7 @@ pub enum Error {
     Daemon(DaemonError),
     InvalidResponse(ResponseKind),
     Gpio(GpioError),
+    InvalidSpiMode,
     None(()),
 }
 

@@ -1,7 +1,7 @@
 
-use linux_embedded_hal::{Spidev};
-use linux_embedded_hal::spidev::{SpiModeFlags, SpidevOptions};
+use linux_embedded_hal::{spidev, Spidev};
 
+use crate::common::*;
 use crate::error::Error;
 
 pub struct Spi {
@@ -9,12 +9,17 @@ pub struct Spi {
 }
 
 impl Spi {
-    pub fn new(path: &str, baud: u32, mode: u32) -> Result<Self, Error> {
+    pub fn new(path: &str, baud: u32, mode: SpiMode) -> Result<Self, Error> {
         let mut dev = Spidev::open(path)?;
 
-        let mode = SpiModeFlags::from_bits_truncate(mode);
+        let mode = match mode {
+            SpiMode::Mode0 => spidev::SPI_MODE_0,
+            SpiMode::Mode1 => spidev::SPI_MODE_1,
+            SpiMode::Mode2 => spidev::SPI_MODE_2,
+            SpiMode::Mode3 => spidev::SPI_MODE_3,
+        };
 
-        let mut config = SpidevOptions::new();
+        let mut config = spidev::SpidevOptions::new();
         config.max_speed_hz(baud);
         config.mode(mode);
 

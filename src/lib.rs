@@ -18,6 +18,8 @@ extern crate daemon_engine;
 extern crate rr_mux;
 
 pub mod common;
+pub mod manager;
 pub mod error;
 pub mod server;
 pub mod client;
+

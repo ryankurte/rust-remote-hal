@@ -73,7 +73,7 @@ impl Server {
             RequestKind::Ping => ResponseKind::Ok,
             
             RequestKind::SpiConnect(c) => {
-                info!("received SpiConnect (device: {}, baud: {}, mode: {})", device, c.baud, c.mode);
+                info!("received SpiConnect (device: {}, baud: {}, mode: {:?})", device, c.baud, c.mode);
                 let mut spi_map = self.spi.lock().unwrap();
 
                 match spi_map.entry(device.to_owned()) {

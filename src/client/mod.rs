@@ -2,8 +2,6 @@
 use std::net::{SocketAddr};
 use std::time::Duration;
 
-use linux_embedded_hal::spidev::SpiModeFlags;
-
 use futures::prelude::*;
 use tokio::prelude::*;
 
@@ -12,6 +10,7 @@ use daemon_engine::codecs::json::{JsonCodec};
 use rr_mux::{Mux as BaseMux, Connector};
 
 use crate::common::*;
+use crate::manager::Manager;
 use crate::error::Error;
 
 pub mod spi;
@@ -101,34 +100,64 @@ impl Client {
     pub fn request(&mut self, device: &str, request: RequestKind) -> impl Future<Item=ResponseKind, Error=Error> {
         self.mux.do_request(device, request)
     }
+}
+
+impl Manager for Client {
+    type Spi = Spi;
+    type Pin = Pin;
+    type I2c = I2c;
 
     /// Connect to a new Spi instance
-    pub fn spi(&mut self, path: &str, baud: u32, mode: SpiModeFlags) -> Result<Spi, Error> {
+    fn spi(&mut self, path: &str, baud: u32, mode: SpiMode) -> Box<Future<Item=Spi, Error=Error>> {
         debug!("attempting connection to SPI device: {}", path);
-        let resp = self.mux.do_request(path, RequestKind::SpiConnect(SpiConnect{baud, mode: mode.bits()})).wait()?;
-        match resp {
-            ResponseKind::Ok => Ok(Spi::new(path.to_owned(), self.mux.clone())),
-             _ => Err(Error::InvalidResponse(resp)),
-        }
+        let device = path.to_owned();
+        let mux = self.mux.clone();
+        Box::new(self.mux.do_request(path, RequestKind::SpiConnect(SpiConnect{baud, mode}))
+        .then(|res| {
+            let resp = match res {
+                Err(e) => return Err(e),
+                Ok(r) => r,
+            };
+            match resp {
+                ResponseKind::Ok => Ok(Spi::new(device, mux)),
+                _ => Err(Error::InvalidResponse(resp)),
+            }
+        }))
     }
 
     /// Connect to a new Pin instance
-    pub fn pin(&mut self, path: &str, mode: PinMode) -> Result<Pin, Error> {
+    fn pin(&mut self, path: &str, mode: PinMode) -> Box<Future<Item=Pin, Error=Error>> {
         debug!("attempting connection to Pin: {}", path);
-        let resp = self.mux.do_request(path, RequestKind::PinConnect(mode)).wait()?;
-        match resp {
-            ResponseKind::Ok => Ok(Pin::new(path.to_owned(), self.mux.clone())),
-             _ => Err(Error::InvalidResponse(resp)),
-        }
+        let device = path.to_owned();
+        let mux = self.mux.clone();
+        Box::new(self.mux.do_request(path, RequestKind::PinConnect(mode))
+        .then(|res| {
+            let resp = match res {
+                Err(e) => return Err(e),
+                Ok(r) => r,
+            };
+            match resp {
+                ResponseKind::Ok => Ok(Pin::new(device, mux)),
+                _ => Err(Error::InvalidResponse(resp)),
+            }
+        }))
     }
 
     /// Connect to a new I2c instance
-    pub fn i2c(&mut self, path: &str) -> Result<I2c, Error> {
+    fn i2c(&mut self, path: &str) -> Box<Future<Item=I2c, Error=Error>> {
         debug!("attempting connection to I2c: {}", path);
-        let resp = self.mux.do_request(path, RequestKind::I2cConnect).wait()?;
-        match resp {
-            ResponseKind::Ok => Ok(I2c::new(path.to_owned(), self.mux.clone())),
-             _ => Err(Error::InvalidResponse(resp)),
-        }
+        let device = path.to_owned();
+        let mux = self.mux.clone();
+        Box::new(self.mux.do_request(path, RequestKind::I2cConnect)
+        .then(|res| {
+            let resp = match res {
+                Err(e) => return Err(e),
+                Ok(r) => r,
+            };
+            match resp {
+                ResponseKind::Ok => Ok(I2c::new(device, mux)),
+                _ => Err(Error::InvalidResponse(resp)),
+            }
+        }))
     }
 }
