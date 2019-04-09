@@ -114,6 +114,29 @@ pub enum InitResponse {
     I2c(I2c),
 }
 
+impl InitResponse {
+    pub fn spi(self) -> Option<Spi> {
+        match self {
+            InitResponse::Spi(s) => Some(s),
+            _ => None,
+        }
+    }
+
+    pub fn pin(self) -> Option<Pin> {
+        match self {
+            InitResponse::Pin(s) => Some(s),
+            _ => None,
+        }
+    }
+
+    pub fn i2c(self) -> Option<I2c> {
+        match self {
+            InitResponse::I2c(s) => Some(s),
+            _ => None,
+        }
+    }
+}
+
 impl Client {
 
     fn do_init(&mut self, request: &InitRequest) -> impl Future<Item=InitResponse, Error=Error> {
