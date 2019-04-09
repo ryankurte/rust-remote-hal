@@ -102,6 +102,38 @@ impl Client {
     }
 }
 
+pub enum InitRequest{
+    Spi{path: String, baud: u32, mode: SpiMode},
+    Pin{path: String, mode: PinMode},
+    I2c{path: String},
+}
+
+pub enum InitResponse {
+    Spi(Spi),
+    Pin(Pin),
+    I2c(I2c),
+}
+
+impl Client {
+    fn init(&mut self, requests: &[InitRequest]) -> impl Future<Item=Vec<InitResponse>, Error=Error> {
+        let f: Vec<_> = requests.iter().map(|r| {
+            match r {
+                InitRequest::Spi{path, baud, mode} => {
+                    //self.spi(&path, *baud, *mode).map(|v| InitResponse::Spi(v) )
+                },
+                InitRequest::Pin{path, mode} => {
+                    //self.pin(&path, *mode).map(|v| InitResponse::Pin(v) )
+                },
+                InitRequest::I2c{path} => {
+                    //self.i2c(&path).map(|v| InitResponse::I2c(v) )
+                },
+            }
+        }).collect();
+
+        future::join_all(f)
+    }
+}
+
 impl Manager for Client {
     type Spi = Spi;
     type Pin = Pin;
