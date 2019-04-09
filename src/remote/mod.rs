@@ -115,19 +115,26 @@ pub enum InitResponse {
 }
 
 impl Client {
-    fn init(&mut self, requests: &[InitRequest]) -> impl Future<Item=Vec<InitResponse>, Error=Error> {
+
+    fn do_init(&mut self, request: &InitRequest) -> impl Future<Item=InitResponse, Error=Error> {
+        use futures::future::Either::{A, B};
+
+        match request {
+            InitRequest::Spi{path, baud, mode} => {
+                A(A(self.spi(&path, *baud, mode.clone()).map(|v| InitResponse::Spi(v) )))
+            },
+            InitRequest::Pin{path, mode} => {
+                A(B(self.pin(&path, mode.clone()).map(|v| InitResponse::Pin(v) )))
+            },
+            InitRequest::I2c{path} => {
+                B(self.i2c(&path).map(|v| InitResponse::I2c(v) ))
+            },
+        }
+    }
+
+    pub fn init_all(&mut self, requests: &[InitRequest]) -> impl Future<Item=Vec<InitResponse>, Error=Error> {
         let f: Vec<_> = requests.iter().map(|r| {
-            match r {
-                InitRequest::Spi{path, baud, mode} => {
-                    //self.spi(&path, *baud, *mode).map(|v| InitResponse::Spi(v) )
-                },
-                InitRequest::Pin{path, mode} => {
-                    //self.pin(&path, *mode).map(|v| InitResponse::Pin(v) )
-                },
-                InitRequest::I2c{path} => {
-                    //self.i2c(&path).map(|v| InitResponse::I2c(v) )
-                },
-            }
+            self.do_init(r)
         }).collect();
 
         future::join_all(f)

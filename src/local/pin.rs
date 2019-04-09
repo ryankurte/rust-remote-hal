@@ -12,10 +12,21 @@ pub struct Pin {
 
 impl Pin {
     pub fn new(path: &str, mode: PinMode) -> Result<Self, Error> {
+
+        // Patch to export if pin follows a sensible layout
+        let p = path.replace("/sys/class/gpio/gpio", "");
+        if let Ok(id) = p.parse::<u64>() {
+            let dev = PinDev::new(id);
+            dev.export()?;
+        }
+
         let dev = PinDev::from_path(path)
             .map_err(|e| Error::Remote(format!("{:?}", e)) )?;
 
-        dev.export()?;
+        // export fails because you can't open the path before exporting...
+        // docs recommend using pin by number...
+        //dev.export()?;
+
         match mode {
             PinMode::Input => dev.set_direction(Direction::In)?,
             PinMode::Output => dev.set_direction(Direction::Out)?,
@@ -27,6 +38,7 @@ impl Pin {
 
 impl Drop for Pin {
     fn drop(&mut self) {
+        // unexport disabled as export doesn't _really_ work
         self.dev.unexport().unwrap();
     }
 }
