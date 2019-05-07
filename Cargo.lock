@@ -763,7 +763,7 @@ dependencies = [
 
 [[package]]
 name = "remote-hal"
-version = "0.5.1"
+version = "0.5.2"
 dependencies = [
  "crate 0.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "daemon-engine 0.5.1 (registry+https://github.com/rust-lang/crates.io-index)",
