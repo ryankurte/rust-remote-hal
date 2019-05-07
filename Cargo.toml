@@ -2,7 +2,7 @@
 name = "remote-hal"
 description = "a JSON RPC based remote embedded-hal implementation including a daemon, cli, and library"
 repository = "https://github.com/ryankurte/rust-remote-hal"
-version = "0.5.3"
+version = "0.5.4"
 authors = ["Ryan Kurte <ryankurte@gmail.com>"]
 edition = "2018"
 license = "MIT / Apache-2.0"
