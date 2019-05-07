@@ -23,7 +23,7 @@ script:
 - "cargo build --target=$TARGET --release"
 
 before_deploy: 
-  - "tar -cvf target/dsf-$TARGET-$TRAVIS_TAG.tgz -C target/$TARGET/release/ rhc rhd || return 0" 
+  - "tar -cvf target/remote-hal-$TARGET-$TRAVIS_TAG.tgz -C target/$TARGET/release/ rhc rhd || return 0" 
 
 deploy:
   provider: releases
@@ -31,6 +31,7 @@ deploy:
     secure: dIJPpdxo8hamZ07kIm97e7N2hebLijU9ECllMYZcSvY1/pRpH3cXZe840FaWOgVOZoiYw16Yjc3hoZ+VaxP7mliX4nLoEpkrDuSueousTTx3W0axZgKpAe2lindZ6x+Puly7OLl/3ETvqjggeeWUZkms+0VNwogREFsx/32M3ZUy0K7OQOq/fr2wxib5zIFV9JXfeYs7sdRl54MkAhz8quc4KUVtIkPeDtYKPDBFQ8H8I5YJWqR/Rx+gpSJttsHwQO/PGeVtkhlIe/xeKrKWsESqOs6KC3sXWH3KoRYphKx0A0wro6hiBXq5kKVtPjtk0WfRCjY8jZrt9wxWC9TuK5nQYRpb8cRARfQ6+2I6jzUW8a/R9DWkvYPTGZ2PjpJIKctuMRwauwnCQtHfHsrzmkaOVikEol/FIRNUHwq3cmSxsngFijuNqa/pIaRVcSg1fQi9u1jHH6cckoMpvWZgIm9HpF3aGuZGZz5rGEoQ5jXki6Srkxv0UHlUs7oCxlfvDn+P2VyKeSiFUTzHQAHvVS+RSnI9eh+u+z/P49l5/ZTCqXIFhmlUT24UEFG55T9ym7JjJBPgl2yo4NiZndv1OAczEdZw8HejB9pmIxAxSTGFqrMv2hcqFkjWO2k/l6MtRygAKyp6u7rNFZjsPk7dUqCgSbcZ2MK4kgm55tBz/sw=
   file: target/*.tgz
   draft: true
+  skip_cleanup: true
   on:
     repo: ryankurte/rust-remote-hal
 
