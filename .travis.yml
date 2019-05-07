@@ -1,6 +1,5 @@
 language: rust
 cache: cargo
-
 matrix:
   include:
   - env: TARGET=x86_64-unknown-linux-gnu
@@ -13,29 +12,25 @@ matrix:
         - gcc-arm-linux-gnueabihf
         - libc6-armhf-cross
         - libc6-dev-armhf-cross
-
 install:
 - rustup target add armv7-unknown-linux-gnueabihf
 - cargo fetch
-
 script:
 - cargo build; cargo test
 - cargo build --target=$TARGET --release
-
 before_deploy:
-- tar -cvf target/remote-hal-$TARGET-$TRAVIS_TAG.tgz -C target/$TARGET/release/ rhc rhd || return 0
-
+- tar -cvf target/remote-hal-$TARGET-$TRAVIS_TAG.tgz -C target/$TARGET/release/ rhc
+  rhd || return 0
 notifications:
   email:
     on_success: never
     on_failure: never
-
 deploy:
   provider: releases
   api_key:
+    secure: e+Tsje/rTQHUmYbkcA2K5JWsiKLnSt/b2hdjmnOU2BZEegTUqIB3gN6R5+6Z0FFnLmFafBIiR1jvWN1ENX7ioMRPesSHMdjQ5js08yZFsORkItTKZsFbfg/VOeuvD1qbQEZwxCCbH8DJAKml03K8IpdvO/NPGMAjOGzzN9FO5GTsu4vNPdlHQ5Vq08c3wrtTie/AgnptpKJeDf2kKuz15sJtfCpmluDnv/rBErEjoWuFjz52lcuzEh4KPl2A9+9f6jOeCeH7FcRFkcbyOvVK8iZkdiHjIK0m7nztnpOOl9P0Cr3APJtPLZmSWw83TRDLdIRzkUKlZXcxnNbEQwWUhHXU4WGZ2bZ3/k39jmaxJQMxw66Otygx3yRDGTaeccxy1CeozZVtp08Mi3PVniSvOrb96bIXCXvOXPLRaTKji5VlcCgS88hX9puYLg9JtZ3LnivNu/NmMoKkSy5Ygkk0oDRSy0k0hr8Ro2hzGkchlVsX6ge5vIIOm1FzjmVU+Qij0MlWOHrz9JjdMzwcL5HKFJwG4qiu3KRuAMNhiY4+YTqbWon60+kjFiuIno4NjNdj4mnqIooe49Yep/NFmZbTVZzLnqISr62BoPk8DXbBZfQQ31AYqoT4S7wsQ4U40y39oK049AJZc2PGKN9cFnw4cN6qZ5AeFpaE2b68pIw5rUs=
   file: target/*.tgz
   file_glob: true
-  skip_cleanup: true
   on:
     repo: ryankurte/rust-remote-hal
     tags: true
