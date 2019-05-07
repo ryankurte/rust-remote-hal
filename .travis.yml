@@ -31,6 +31,7 @@ deploy:
     secure: ZN6JpzxjudGHpEXVJIoyMzdjavgJHt/6I4jOQTkxagPpmfAqKevpJyzuOPedJsCIlWQjAhR7Pl8rSCMcniimyXHdr9Z8RnfrTYJxQTPLjevK2yznnf+P+Kl/IprHfrzGpKsP83IcrxFt4T8wbnfuo8d26r2PCefzr544/MXSorjGqVxA7xpYBq2jaYZMYVWO6AnqUE2XmuZt2SbhyDildzhO4VEtqun9NweLEIHNAf76X7ytgsNzs/eFV9/qjpJyFAL8Cgc2up8vzBGGCJboyxqB0xmqWGrweXijx252RYM1MLeUBLLBx2kTX+rVgBcBK0lBM+hs8P4qxzmrBY9lk4w+Zvkul04QB33TCvXUuBmjYwYfUtlHjmVZ3+Dq/djGgozlOna6xlCLQJUqdSMGV3YMFTRizf8VwQjAV3I8eBNiKMcZceTvXLEfccyMfrRCfSSOjrZLsUEbEdKOlxog9i1L9CtQrHrEupDsrUm3lksc5wrQev9DP5fUhuFxBeFD6J/2t5d5gcnzbUSy8jF9U5wUk84CZG8GwR7OVbbsHnYL7w/w7eLY0MwNe5gmjTtETBOD+CrDglYt2plrHMqr9b2G+LAyBmAxi4NXsOWMDG9Nou8KAst4ROoxlBZbi4+BImpBlcoyFo9HUmZmATLyBBAG5gg4wiRu+GgD8V6U7eY=
   file: target/*.tgz
   file_glob: true
+  skip_cleanup: true
   on:
     repo: ryankurte/rust-remote-hal
     tags: true
