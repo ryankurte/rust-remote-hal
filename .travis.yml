@@ -10,33 +10,34 @@ matrix:
     addons:
       apt:
         packages:
-          - gcc-arm-linux-gnueabihf
-          - libc6-armhf-cross
-          - libc6-dev-armhf-cross
+        - gcc-arm-linux-gnueabihf
+        - libc6-armhf-cross
+        - libc6-dev-armhf-cross
 
 install:
 - rustup target add armv7-unknown-linux-gnueabihf
 - cargo fetch
 
-script: 
+script:
 - cargo build; cargo test
-- "cargo build --target=$TARGET --release"
+- cargo build --target=$TARGET --release
 
-before_deploy: 
-  - "tar -cvf target/remote-hal-$TARGET-$TRAVIS_TAG.tgz -C target/$TARGET/release/ rhc rhd || return 0" 
-
-deploy:
-  provider: releases
-  api_key:
-    secure: dIJPpdxo8hamZ07kIm97e7N2hebLijU9ECllMYZcSvY1/pRpH3cXZe840FaWOgVOZoiYw16Yjc3hoZ+VaxP7mliX4nLoEpkrDuSueousTTx3W0axZgKpAe2lindZ6x+Puly7OLl/3ETvqjggeeWUZkms+0VNwogREFsx/32M3ZUy0K7OQOq/fr2wxib5zIFV9JXfeYs7sdRl54MkAhz8quc4KUVtIkPeDtYKPDBFQ8H8I5YJWqR/Rx+gpSJttsHwQO/PGeVtkhlIe/xeKrKWsESqOs6KC3sXWH3KoRYphKx0A0wro6hiBXq5kKVtPjtk0WfRCjY8jZrt9wxWC9TuK5nQYRpb8cRARfQ6+2I6jzUW8a/R9DWkvYPTGZ2PjpJIKctuMRwauwnCQtHfHsrzmkaOVikEol/FIRNUHwq3cmSxsngFijuNqa/pIaRVcSg1fQi9u1jHH6cckoMpvWZgIm9HpF3aGuZGZz5rGEoQ5jXki6Srkxv0UHlUs7oCxlfvDn+P2VyKeSiFUTzHQAHvVS+RSnI9eh+u+z/P49l5/ZTCqXIFhmlUT24UEFG55T9ym7JjJBPgl2yo4NiZndv1OAczEdZw8HejB9pmIxAxSTGFqrMv2hcqFkjWO2k/l6MtRygAKyp6u7rNFZjsPk7dUqCgSbcZ2MK4kgm55tBz/sw=
-  file: target/*.tgz
-  draft: true
-  skip_cleanup: true
-  on:
-    repo: ryankurte/rust-remote-hal
+before_deploy:
+- tar -cvf target/remote-hal-$TARGET-$TRAVIS_TAG.tgz -C target/$TARGET/release/ rhc rhd || return 0
 
 notifications:
   email:
     on_success: never
     on_failure: never
+
+deploy:
+  provider: releases
+  api_key:
+    secure: ITuyqW8ue/rqKwBNAoxz3DENPuKHpIa+SUa4EA14xImFcgyX9ftJKN9Bk0VRrNt7LEg83hwP80QDADrC5mxTVPvg3fysuPiIx4BVJrT3YwXjGNvuMcKMz+sofdvh3gxA0xnUb0e4GW8qGhTWEaDsDDK4+IMu1pLzXm4Rf0/3lN6LqdimFpv67cHRWl43sg3kO/aZYufyOt5yNdAd/I7NoIYmM8yniW6QMa6ivc/Nl0KN/KRRppPzDmnotfNa+SuJIuCfi6XmV6667IlqTixjrpSrnEHxUMnd5w983G7Zd97BGNrso2y+X3I2QEOzNncyMMmOJMXKgOBj5bGNys/WRU5gv9tjerGE65L9eaxilKNyEwzSCoHgxW+aC3UvJoD2sEzv1lVUoiHKwQiA067qq7DiD/o8xINKQkmy1QA0KEckjLcBqLF3C7EjXsafrOZhG0niTZoNnMNmFHhMXpgjmKVoK2+t33IdjcDvOyEVY8KXs57iYmZ8Yqlbe+ssMlCDrYdzDmybD/pU4/yqONLvA6oLnIiHmik38CIYA4uS6V5qDeNqpXqJ2cROk0Ejwpj8EO28ipM1rMNWoyiseVNzhJu8QnO3yj3emx+wWaOAy9TACnmi9wcWaapuGat7REAHhVpO/z6Hw6J2ISiHA8PhC7tKNiaV0af+rlDbrxxg0UM=
+  file: target/*.tgz
+  file_glob: true
+  skip_cleanup: true
+  on:
+    repo: ryankurte/rust-remote-hal
+    tags: true
 
